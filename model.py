@@ -8,13 +8,23 @@ import os
 class Database():
     def __init__(self):
         d = os.path.abspath(os.getcwd())
-        self.conn = sqlite3.connect(f"{d}\MyDatabase.db")
+        self._conn = sqlite3.connect(f"{d}\MyDatabase.db")
 
 
 class Akun(Database):
     def __init__(self):
         super().__init__()
+        self._cursor = self._conn.cursor()
+        self._data = {}
+    
+    def get_val(self):
+        self._cursor.execute("""SELECT * FROM AKUN""")
+        self.__res = self._cursor.fetchall()
+        for item in self.__res:
+            self._data[item[1]] = item[2]
 
+        return self._data
+    
     def create_table(self):
         query = f"""CREATE TABLE IF NOT EXISTS AKUN
                 (
@@ -34,10 +44,11 @@ class Akun(Database):
                         (UNIQUE_IDS,USERNAME,PASSWORD)
                         VALUES
                         (?,?,?)"""
-            self.conn.execute(query,param,)
-            self.conn.commit()
+            self._conn.execute(query,param,)
+            self._conn.commit()
             msg = f"ADD ID : {tokens} Succesfully"
-        except Exception:
+        except Exception as e:
+            print(e)
             msg = "ID ALREADY EXIST"
         return msg
 
@@ -48,8 +59,8 @@ class Akun(Database):
                     SET USERNAME = ?,
                         PASSWORD = ?
                     WHERE UNIQUE_IDS = ?"""
-            self.conn.execute(query,(param))
-            self.conn.commit()
+            self._conn.execute(query,(param))
+            self._conn.commit()
             msg = f"Update ID : {token} Succesfully"
         except Exception:
             msg = "No Such ID"
@@ -60,15 +71,15 @@ class Akun(Database):
             param = (token,)
             query = """DELETE FROM AKUN
                     WHERE UNIQUE_IDS = ?"""
-            self.conn.execute(query,param)
-            self.conn.commit()
+            self._conn.execute(query,param)
+            self._conn.commit()
             msg = f"Delete ID : {token} Succesfully"
         except Exception:
             msg = "No Such ID"
         return msg
 
     def read(self):
-        curs = self.conn.cursor()
+        curs = self._conn.cursor()
         query = """SELECT * FROM AKUN"""
         curs.execute(query)
         data = curs.fetchall()
@@ -102,15 +113,16 @@ def rendem_token():
     return y
 
 def main():
-    # y  = rendem_token()
-    # uname = input()
-    # passwd = gp.getpass()
+    y  = rendem_token()
+    uname = input()
+    passwd = gp.getpass()
     akn = Akun()
     # akn.read()
     # akn.delete('21AKN61')
     # akn.update('21AKN61',uname,passwd)
-    akn.create_table()
-    # akn.insert()
+    # akn.create_table()
+    msg = akn.insert(y,uname,passwd)
+    print(msg)
 
 if __name__ == '__main__':
     main()
