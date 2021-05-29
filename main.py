@@ -2,6 +2,98 @@ import wx
 import wxres 
 import model
 
+class Akun(wxres.Akun_Frame):
+    def __init__(self,uname, parent = None):
+        wxres.Akun_Frame.__init__(self,parent)
+        self.__user = uname
+
+    def get_home(self, event):
+        self._goingto = True
+        self.go(Home(self.__user))
+        self.Destroy()
+        
+    def go(self,classes):
+        if self._goingto:
+            temp = classes
+            temp.Show()
+           
+        self._goingto = False
+
+
+class Toko(wxres.Toko_Frame):
+    def __init__(self,uname,parent = None):
+        wxres.Toko_Frame.__init__(self,parent)
+        self.__user = uname
+
+    def get_home(self, event):
+        self._goingto = True
+        self.go(Home(self.__user))
+        self.Destroy()
+        
+    def go(self,classes):
+        if self._goingto:
+            temp = classes
+            temp.Show()
+           
+        self._goingto = False
+
+
+class Gudang(wxres.Gudang_Frame):
+    def __init__(self,uname, parent = None):
+        super().__init__(parent)
+        self.__user = uname
+
+
+    def get_home(self, event):
+        self._goingto = True
+        self.go(Home(self.__user))
+        self.Destroy()
+        
+    def go(self,classes):
+        if self._goingto:
+            temp = classes
+            temp.Show()
+           
+        self._goingto = False
+
+
+class Home(wxres.Home_Frame):
+    def __init__(self, account ='Guest', parent = None):
+        super().__init__(parent)
+        self._logout = False
+        self.__user = account.title()
+        self._goingto = False
+        self.as_text.SetLabel(self.__user)
+
+    def log_out(self,event):
+        self._logout = True
+        self.Close()
+
+        if self.log_out:
+            temp = MyLogin()
+            temp.Show()
+
+    def go_toko(self, event):
+        self._goingto = True
+        self.Close()
+        self.redirecting(Toko(self.__user))
+
+    def go_akun(self, event):
+        self._goingto = True
+        self.Close()
+        self.redirecting(Akun(self.__user))
+
+    def go_gudang(self, event):
+        self._goingto = True
+        self.Close()
+        self.redirecting(Gudang(self.__user))
+
+    def redirecting(self,classes):
+        if self._goingto:
+            temp = classes
+            temp.Show()
+
+
 class MyLogin(wxres.Log_Frame):
     def __init__(self, parent = None):
         wxres.Log_Frame.__init__(self,parent)
@@ -35,7 +127,10 @@ class MyLogin(wxres.Log_Frame):
             else:
                 self._auth = False
                 wx.MessageBox('Log In Failed','Message',wx.OK | wx.ICON_ERROR)
-
+        
+        if self._auth:
+            temp = Home(self.__uname)
+            temp.Show()
 
 
 if __name__=='__main__':
